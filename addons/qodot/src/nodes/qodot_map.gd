@@ -1182,17 +1182,16 @@ func apply_properties() -> void:
 							var prop_color = prop_default
 							var prop_comps = prop_string.split(" ")
 							if prop_comps.size() > 2:
-								if "." in prop_comps[0] or "." in prop_comps[1] or "." in prop_comps[2]:
-									prop_color.r = prop_comps[0].to_float()
-									prop_color.g = prop_comps[1].to_float()
-									prop_color.b = prop_comps[2].to_float()
+								# we only export color1, so no reason to support color255 format
+								prop_color.r = prop_comps[0].to_float()
+								prop_color.g = prop_comps[1].to_float()
+								prop_color.b = prop_comps[2].to_float()
+								if len(prop_comps) >= 4:
+									prop_color.a = prop_comps[3].to_float()
 								else:
-									prop_color.r8 = prop_comps[0].to_int()
-									prop_color.g8 = prop_comps[1].to_int()
-									prop_color.b8 = prop_comps[2].to_int()
+									prop_color.a = 1
 							else:
 								push_error("Invalid color format for \'" + property + "\' in entity \'" + classname + "\': " + prop_string)
-								
 							properties[property] = prop_color
 						elif prop_default is Dictionary:
 							properties[property] = prop_string.to_int()
