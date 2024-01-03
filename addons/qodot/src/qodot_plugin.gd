@@ -120,6 +120,10 @@ func create_qodot_map_control() -> Control:
 	var unwrap_uv2_button = Button.new()
 	unwrap_uv2_button.text = "Unwrap UV2"
 	unwrap_uv2_button.connect("pressed",Callable(self,"qodot_map_unwrap_uv2"))
+	
+	var build_and_unwrap_button = Button.new()
+	build_and_unwrap_button.text = "Full Build & Unwrap UV2"
+	build_and_unwrap_button.connect("pressed", Callable(self, "qodot_map_full_build_and_unwrap_uv2"))
 
 	var control = HBoxContainer.new()
 	control.add_child(separator)
@@ -127,6 +131,7 @@ func create_qodot_map_control() -> Control:
 	control.add_child(quick_build_button)
 	control.add_child(full_build_button)
 	control.add_child(unwrap_uv2_button)
+	control.add_child(build_and_unwrap_button)
 
 	return control
 
@@ -169,7 +174,7 @@ func qodot_map_quick_build() -> void:
 	edited_object.verify_and_build()
 
 ## Create the "Full Build" button for [QodotMap]s in the editor
-func qodot_map_full_build() -> void:
+func qodot_map_full_build(unwrap_after_build: bool = false) -> void:
 	var edited_object : QodotMap = edited_object_ref.get_ref()
 	if not edited_object:
 		return
@@ -181,6 +186,8 @@ func qodot_map_full_build() -> void:
 	edited_object.build_progress.connect(qodot_map_build_progress)
 	edited_object.build_complete.connect(qodot_map_build_complete.bind(edited_object))
 	edited_object.build_failed.connect(qodot_map_build_complete.bind(edited_object))
+	if unwrap_after_build:
+		edited_object.build_complete.connect(qodot_map_unwrap_uv2)
 
 	edited_object.verify_and_build()
 
@@ -194,9 +201,15 @@ func qodot_map_unwrap_uv2() -> void:
 		return
 
 	set_qodot_map_control_disabled(true)
-	edited_object.connect("unwrap_uv2_complete", qodot_map_build_complete.bind(edited_object))
+	var binding = qodot_map_build_complete.bind(edited_object)
+	if !edited_object.is_connected("unwrap_uv2_complete", binding):
+		edited_object.connect("unwrap_uv2_complete", binding)
 
 	edited_object.unwrap_uv2()
+
+func qodot_map_full_build_and_unwrap_uv2() -> void:
+	# unwraps UV2 after build
+	qodot_map_full_build(true)
 
 ## Enable or disable the control for [QodotMap]s in the editor
 func set_qodot_map_control_disabled(disabled: bool) -> void:
