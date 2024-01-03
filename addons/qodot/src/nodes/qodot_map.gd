@@ -1238,9 +1238,13 @@ func connect_signals() -> void:
 		if not 'target' in entity_properties:
 			continue
 		
-		var target_nodes := get_nodes_by_targetname(entity_properties['target'])
-		for target_node in target_nodes:
-			connect_signal(entity_node, target_node)
+		var target_prop = entity_properties['target']
+		if target_prop != null:
+			var target_nodes := get_nodes_by_targetname(target_prop)
+			for target_node in target_nodes:
+				connect_signal(entity_node, target_node)
+		else:
+			push_warning("A '%s' entity that expects a target has no target assigned!" % entity_properties["classname"])
 
 ## Connect a signal on [code]entity_node[/code] to [code]target_node[/code], possibly mediated by the contents of a [code]signal[/code] or [code]receiver[/code] entity
 func connect_signal(entity_node: Node, target_node: Node) -> void:
