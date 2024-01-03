@@ -64,10 +64,10 @@ func build_def_text() -> String:
 				value.size.z
 			]
 		elif value is Color:
-			res += "%s %s %s" % [
-				value.r8,
-				value.g8,
-				value.b8
+			res += "%.1f %.1f %.1f" % [
+				value.r,
+				value.g,
+				value.b
 			]
 		elif value is String:
 			res += value
@@ -117,11 +117,12 @@ func build_def_text() -> String:
 				value.z
 			]
 		elif value is Color:
-			prop_type = "color255"
-			prop_val = "\"%s %s %s\"" % [
-				value.r8,
-				value.g8,
-				value.b8
+			prop_type = "color1"
+			prop_val = "\"%.1f %.1f %.1f %.1f\"" % [
+				value.r,
+				value.g,
+				value.b,
+				value.a
 			]
 		elif value is Dictionary:
 			prop_type = "choices"
